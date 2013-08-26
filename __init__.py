@@ -37,7 +37,7 @@ However, it likely does NOT work in iOS. Currently
 this is not a priority, but if you'd like to have this feature, you are welcome
 to submit patches. 
 
-Using and Extending Timeline
+Usage
 ============================
 
 A simple timeline can be obtained by just calling::
@@ -90,12 +90,37 @@ a list of :class:`TimeTick`s, one for each of available modes.
 
 A more complex working example is::
 
+    if __name__ == '__main__':
+        acc = Accordion(orientation='vertical')
+        simple = AccordionItem(title='simple')
+        simple.add_widget(Timeline())
+        complex_ = AccordionItem(title='complex')
+        complex_.add_widget(
+            Timeline(backward=True,
+                     orientation='horizontal',
+                     ticks=(selected_time_ticks() + 
+                             [TimeTick(valign='top',
+                                       mode='12 hours'),
+                              TimeTick(valign='line_bottom',
+                                       mode='2 hours')]),
+                     line_offset=dp(130)
+                     ))
+        acc.add_widget(simple)
+        acc.add_widget(complex_)
+        runTouchApp(acc)
 
-    
-The corresponding :class:`TimeTick` overrides :meth:`Tick.tick_iter`
-to provide datetimes instead of a global index. The custom labeller
-:class:`TimeLabeller` also specializes the labelling to provide more clarity
-and space saving than the default :class:`TickLabeller`.
+Extending
+=========
+
+The :class:`TimeTick` overrides :meth:`Tick.tick_iter`
+to yield datetimes instead of local indices, and :meth:`Tick.draw` similarly
+expects datetimes instead of indices. Hence for most graphics customization, 
+overriding :meth:`TimeTick.draw` may be enough. For example, a time series
+grapher can override :meth:`TimeTick.draw` to draw a dot at the height 
+corresponding to the given datetime. 
+
+Of course, the labeller :class:`TimeLabeller` can also be subclassed or
+ducktyped to provide the necessary functionality.
 
 '''
 from bisect import bisect, bisect_left
@@ -221,10 +246,8 @@ class TimeLabeller(TickLabeller):
         if tl.is_vertical():
             y = tick_info[1] + tick_info[3] / 2 - texture.height / 2
             if which == 'time':
-#                 halign = self.time_halign
                 dist = self.time_dist_from_edge
             else:
-#                 halign = self.date_halign
                 dist = self.date_dist_from_edge            
             dist = max(dist, tick.tick_size[1] + tl.tick_label_padding)
             halign = tick.halign
@@ -240,10 +263,8 @@ class TimeLabeller(TickLabeller):
             # TODO horizontal is gonna get crowded with text
             x = tick_info[0] + tick_info[2] / 2 - texture.width / 2
             if which == 'time':
-#                 valign = self.time_valign
                 dist = self.time_dist_from_edge
             else:
-#                 valign = self.date_valign
                 dist = self.date_dist_from_edge
             dist = max(dist, tick.tick_size[1] + tl.tick_label_padding)
             valign = tick.valign
@@ -696,9 +717,12 @@ if __name__ == '__main__':
         Timeline(backward=True,
                  orientation='horizontal',
                  ticks=selected_time_ticks() + [TimeTick(valign='top',
-                                                         mode='12 hours')],
-                 line_offset=30
+                                                         mode='12 hours'),
+                                                TimeTick(valign='line_bottom',
+                                                         mode='2 hours')],
+                 line_offset=dp(130)
                  ))
     acc.add_widget(simple)
     acc.add_widget(complex_)
     runTouchApp(acc)
+
