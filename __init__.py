@@ -206,6 +206,7 @@ class TimeLabeller(TickLabeller):
     def _get_texture_pos(self, tick, index, succinct=True, which='time',
                          texture=None):
         tl = self.tickline
+        # tick_info should be (x, y, width, height) of tick
         tick_info = self.registrar[tick][index]
         if not texture:
             label_kw = tick.get_label_texture(index, succinct, return_kw=True)
@@ -225,6 +226,7 @@ class TimeLabeller(TickLabeller):
             else:
 #                 halign = self.date_halign
                 dist = self.date_dist_from_edge            
+            dist = max(dist, tick.tick_size[1] + tl.tick_label_padding)
             halign = tick.halign
             if halign == 'left':
                 x = tl.x + dist
@@ -243,6 +245,7 @@ class TimeLabeller(TickLabeller):
             else:
 #                 valign = self.date_valign
                 dist = self.date_dist_from_edge
+            dist = max(dist, tick.tick_size[1] + tl.tick_label_padding)
             valign = tick.valign
             if valign == 'top':
                 y = tl.top - dist - texture.height
