@@ -139,20 +139,46 @@ Builder.load_string('''
     size: self.texture_size
     size_hint: None, None
 ''')
-
 class AutoSizeLabel(Label):
     pass
 
 class TimeLabeller(TickLabeller):
+    '''default labeller of :class:`Timeline`. For an example of its graphics,
+    see example images or run the example in the module documentation.
+    '''
+    
     date_halign = OptionProperty('left', options=['left', 'right'])   
+    '''specifies whether the date labels are on the left or right side of
+    the :class:`Timeline` when the timeline is vertical. Has no effect when
+    the timeline is horizontal.'''
+    
     date_valign = OptionProperty('bottom', options=['top', 'bottom'])
+    '''specifies whether the date labels are on top or bottom of
+    the :class:`Timeline` when the timeline is horizontal. Has no effect when
+    the timeline is vertical.'''
+
     time_halign = OptionProperty('left', options=['left', 'right'])   
+    '''specifies whether the time labels are on the left or right side of
+    the :class:`Timeline` when the timeline is vertical. Has no effect when
+    the timeline is horizontal.'''
+
     time_valign = OptionProperty('bottom', options=['top', 'bottom'])
-#     tick_color = ListProperty({'rgba': [1, 1, 1, 1]})
+    '''specifies whether the time labels are on top or bottom of
+    the :class:`Timeline` when the timeline is horizontal. Has no effect when
+    the timeline is vertical.'''
+
     date_dist_from_edge = NumericProperty('55dp')
+    '''distance of the date labels from the edge of the :class:`Timeline`.'''
+    
     time_dist_from_edge = NumericProperty('22dp')
-    time_font_size = NumericProperty('7sp')
+    '''distance of the time labels from the edge of the :class:`Timeline`.'''
+
     date_font_size = NumericProperty('12sp')
+    '''font size of the date labels.'''
+
+    time_font_size = NumericProperty('7sp')
+    '''font size of the time labels.'''
+    
     def __init__(self, tickline, **kw):
         super(TimeLabeller, self).__init__(tickline, **kw)
         self.labels = []
@@ -176,6 +202,7 @@ class TimeLabeller(TickLabeller):
             self.have_time |= tick.mode != 'day'
             self.registrar.setdefault(tick, {})[tick_index] = tick_info
             self.seconds_registrar[seconds] = tick_sc
+            
     def _get_texture_pos(self, tick, index, succinct=True, which='time',
                          texture=None):
         tl = self.tickline
@@ -230,7 +257,7 @@ class TimeLabeller(TickLabeller):
             instrs = setdefault(tick, {})
             if tick.mode != 'day':
                 for index in r[tick]:
-                    self._update_rect(tick, index, instrs, get_texture_pos, 
+                    self._update_rect(tick, index, instrs, get_texture_pos,
                                       to_pop, succinct, canvas)
             elif tl.is_vertical():
                 bottom_up = sorted(r[tick], reverse=tl.backward)
@@ -238,7 +265,7 @@ class TimeLabeller(TickLabeller):
                     last_rect = [None, None]
                     for index in bottom_up:
                         rect = \
-                        self._update_rect(tick, index, instrs, get_texture_pos, 
+                        self._update_rect(tick, index, instrs, get_texture_pos,
                                           to_pop, succinct, canvas, which='date')
                         last_rect[0] = last_rect[1]
                         last_rect[1] = rect
@@ -248,7 +275,7 @@ class TimeLabeller(TickLabeller):
                         _2ndlast, last = last_rect
                         last_y = max(_2ndlast.pos[1] + _2ndlast.size[1],
                                      tl.top - last.size[1])
-                        _2ndlast_y = min(_2ndlast.pos[1] + _2ndlast.size[1], 
+                        _2ndlast_y = min(_2ndlast.pos[1] + _2ndlast.size[1],
                                          tl.top) - _2ndlast.size[1]
                         last.pos = last.pos[0], last_y
                         _2ndlast.pos = _2ndlast.pos[0], _2ndlast_y
@@ -257,7 +284,7 @@ class TimeLabeller(TickLabeller):
                         last_rect[1].pos = last_rect[1].pos[0], new_y
                 else:
                     for index in bottom_up[:-1]:
-                        self._update_rect(tick, index, instrs, get_texture_pos, 
+                        self._update_rect(tick, index, instrs, get_texture_pos,
                                           to_pop, succinct, canvas, which='date')
         for tick, index in to_pop:
             rect = instructions[tick].pop(index)
@@ -268,7 +295,7 @@ class TimeLabeller(TickLabeller):
         if index in instrs:
             # old label: change position
             old_rect = instrs[index]
-            t_p = get_texture_pos(tick, index, succinct, 
+            t_p = get_texture_pos(tick, index, succinct,
                                   texture=old_rect.texture, which=which)
             old_rect.pos = t_p[1]
             to_pop.remove((tick, index))
@@ -296,7 +323,7 @@ unixepoch = datetime(1970, 1, 1, tzinfo=UTC)
 
 
 _tail_names = ['microsecond', 'second', 'minute', 'hour', 'day']
-_tail_res = {'microsecond': 10**-6, 'second': 1, 'minute': 60, 'hour': 3600, 
+_tail_res = {'microsecond': 10 ** -6, 'second': 1, 'minute': 60, 'hour': 3600,
              'day': 3600 * 24}
 
 def time_tail(dt, length=2, tail_name=None, strict=False):
@@ -364,6 +391,7 @@ def round_time(dt, grain='second', mode='nearest'):
 
 
 class TimeTick(Tick):  
+    
     size_dict = \
         {'day': [dp(5), dp(48)],
          '12 hours': [dp(4.5), dp(25)],
@@ -381,6 +409,7 @@ class TimeTick(Tick):
          '10 seconds': [dp(1), dp(4)],
          '5 seconds': [dp(1), dp(4)],
          'second': [dp(1), dp(4)]} 
+        
     scale_factor_dict = \
         {'day': 1,
          '12 hours': 2,
@@ -398,6 +427,7 @@ class TimeTick(Tick):
          '10 seconds': 24 * 360,
          '5 seconds': 24 * 720,
          'second': 24 * 3600}
+        
     mode_options = ['day',
            '12 hours',
            '6 hours',
@@ -414,6 +444,7 @@ class TimeTick(Tick):
            '10 seconds',
            '5 seconds',
            'second']
+    
     mode = OptionProperty('day', options=mode_options)
     # 188 is good to be an entire header for the date
     _tick_size = ListProperty(None)
@@ -421,7 +452,7 @@ class TimeTick(Tick):
         return self._tick_size or self.size_dict[self.mode]
     def set_tick_size(self, val):
         self._tick_size = val
-    tick_size = AliasProperty(get_tick_size, set_tick_size, 
+    tick_size = AliasProperty(get_tick_size, set_tick_size,
                               bind=['_tick_size', 'mode'])
     tz = ObjectProperty(get_localzone())
     def __init__(self, *args, **kw):
@@ -430,20 +461,6 @@ class TimeTick(Tick):
     def granularity(cls, mode):
         '''gives the multiplicity of this mode in terms of seconds.'''
         return cls.scale_factor_dict['second'] / cls.scale_factor_dict[mode]
-#     def time_0(self, tickline):
-#         '''gives :attr:`Tickline.index_0` in terms of time, by default
-#         in the local timezone.
-#         
-#         :param tickline: :class:`Tickline` instance this Tick belongs to.
-#         '''
-#         return self.datetime_of(self.localize(tickline.index_0))
-#     def time_1(self, tickline):
-#         '''gives :attr:`Tickline.index_1` in terms of time, by default
-#         in the local timezone.
-#         
-#         :param tickline: :class:`Tickline` instance this Tick belongs to.
-#         '''
-#         return self.datetime_of(self.localize(tickline.index_1))
     def time_min_max(self, tl, extended=False):
         '''gives either (:meth:`time_0`, :meth`time_1`) or 
         (:meth:`time_1`, :meth`time_0`) applied to ``tl``
@@ -459,10 +476,6 @@ class TimeTick(Tick):
             above. Defaults to False.
         '''
         
-#         min_, max_ = [self.datetime_of(self.localize(idx)) for 
-#                           idx in (
-#                           (tl.index_1, tl.index_0) if tl.backward else
-#                           (tl.index_0, tl.index_1))]    
         min_, max_ = (tl.time_1, tl.time_0) if tl.backward else \
                         (tl.time_0, tl.time_1)
                     
@@ -491,6 +504,7 @@ class TimeTick(Tick):
         if self.mode == 'day':
             yield time
         raise StopIteration
+    
     def draw(self, tickline, time):
         '''Override :meth:`Tick.draw`.
         
@@ -499,14 +513,18 @@ class TimeTick(Tick):
         using :meth:`index_of` and :meth:`index2pos`.
         '''
         super(TimeTick, self).draw(tickline, self.pos_index_of(tickline, time))
+        
     def pos_index_of(self, tickline, time):
         tick_index = self.index_of(time)
         tick_pos = tickline.index2pos(self.globalize(tick_index))
         return tick_pos, tick_index
+    
     def pos_of(self, tickline, time):
         return self.pos_index_of(tickline, time)[0]
+    
     def on_mode(self, *args):
         self.scale_factor = self.scale_factor_dict[self.mode]
+        
     def datetime_of(self, tick_index):
         if self.mode in ('day', 'hour', 'minute', 'second'):
             t = timedelta(**{self.mode + 's': tick_index}) + unixepoch
@@ -515,14 +533,17 @@ class TimeTick(Tick):
             t = timedelta(**{mode: int(mult) * tick_index}) + unixepoch
         t = t.astimezone(self.tz)
         return t
+    
     def to_seconds(self, tick_index):
         '''converts the ``tick_index`` to the number of seconds since 
         unix epoch. Always returns the nearest integer.'''
         
         return round(tick_index * self.scale_factor_dict['second'] 
                      / self.scale_factor)
+        
     def pos2time(self, pos, tl):
         return self.datetime_of(self.localize(tl.pos2index(pos)))
+
     def index_of(self, dt, global_=False):
         '''return a local index corresponding to a datetime. If ``global_``
         is true, then return the global index (the index of the owning 
@@ -627,7 +648,7 @@ class Timeline(Tickline):
 
     def __init__(self, **kw):
         now = local_now().astimezone(UTC)
-        self.center_on_timeframe(now - timedelta(days=1), 
+        self.center_on_timeframe(now - timedelta(days=1),
                                  now + timedelta(days=1))
         self.ticks = selected_time_ticks()
         super(Timeline, self).__init__(**kw)
