@@ -213,7 +213,7 @@ class TimeLabeller(TickLabeller):
                 return
             label_kw['font_size'] = self.time_font_size if which == 'time' else \
                                       self.date_font_size
-            label_kw['halign'] = 'left'
+            label_kw['halign'] = 'left' if tl.is_vertical() else 'center'
             label = CoreLabel(**label_kw)
             label.refresh()
             texture = label.texture
@@ -259,7 +259,9 @@ class TimeLabeller(TickLabeller):
                 for index in r[tick]:
                     self._update_rect(tick, index, instrs, get_texture_pos,
                                       to_pop, succinct, canvas)
-            elif tl.is_vertical():
+            else:
+                a = tl.is_vertical()
+                b = 1 - a
                 bottom_up = sorted(r[tick], reverse=tl.backward)
                 if self.have_time:
                     last_rect = [None, None]
@@ -271,16 +273,19 @@ class TimeLabeller(TickLabeller):
                         last_rect[1] = rect
                                                    
                     if len(bottom_up) > 1:
+                        max_ = tl.top if a else tl.right
                         _2ndlast, last = last_rect
-                        last_y = max(_2ndlast.pos[1] + _2ndlast.size[1],
-                                     tl.top - last.size[1])
-                        _2ndlast_y = min(_2ndlast.pos[1] + _2ndlast.size[1],
-                                         tl.top) - _2ndlast.size[1]
-                        last.pos = last.pos[0], last_y
-                        _2ndlast.pos = _2ndlast.pos[0], _2ndlast_y
+                        last_coord = max(_2ndlast.pos[a] + _2ndlast.size[a],
+                                     max_ - last.size[a])
+                        _2ndlast_coord = min(_2ndlast.pos[a] + _2ndlast.size[a],
+                                         max_) - _2ndlast.size[a]
+                        last.pos = (last.pos[b], last_coord) if a else \
+                                    (last_coord, last.pos[b])
+                        _2ndlast.pos = (_2ndlast.pos[b], _2ndlast_coord) if a \
+                                        else (_2ndlast_coord, _2ndlast.pos[b])
                     else:
-                        new_y = tl.top - last_rect[1].size[1]
-                        last_rect[1].pos = last_rect[1].pos[0], new_y
+                        new_y = tl.top - last_rect[1].size[a]
+                        last_rect[1].pos = last_rect[1].pos[b], new_y
                 else:
                     for index in bottom_up[:-1]:
                         self._update_rect(tick, index, instrs, get_texture_pos,
@@ -309,13 +314,6 @@ class TimeLabeller(TickLabeller):
                 instrs[index] = rect
                 canvas.add(rect)
                 return rect
-    #                         t_p = get_texture_pos(tick, index, succinct, 
-#                                               which='date')
-#                         if t_p:
-#                             texture, pos = t_p
-#                             canvas.add(Rectangle(texture=texture, pos=pos,
-#                                                  size=texture.size,
-#                                                  group=group_id))                            
                         
         
 unixepoch = datetime(1970, 1, 1, tzinfo=UTC)
@@ -680,7 +678,8 @@ if __name__ == '__main__':
     simple.add_widget(Timeline())
     complex_ = AccordionItem(title='complex')
     complex_.add_widget(
-        Timeline(backward=True
+        Timeline(backward=True,
+                 orientation='horizontal'
                  ))
     acc.add_widget(simple)
     acc.add_widget(complex_)
