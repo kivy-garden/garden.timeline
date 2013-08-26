@@ -269,7 +269,6 @@ class TimeLabeller(TickLabeller):
                                           to_pop, succinct, canvas, which='date')
                         last_rect[0] = last_rect[1]
                         last_rect[1] = rect
-                    
                                                    
                     if len(bottom_up) > 1:
                         _2ndlast, last = last_rect
@@ -498,10 +497,12 @@ class TimeTick(Tick):
         time_min, time_max = self.time_min_max(tl, extended=True)
         time = round_time(time_min, self.mode, 'up')
         delta = timedelta(seconds=self.granularity(self.mode))
+        if self.mode == 'day' and tl.backward:
+            yield time - timedelta(days=1)
         while time <= time_max:
             yield time
             time += delta
-        if self.mode == 'day':
+        if self.mode == 'day' and not tl.backward:
             yield time
         raise StopIteration
     
@@ -600,8 +601,13 @@ def selected_time_ticks():
             [0, 3, 5, 7, 9, 10, 12, 14, 15]]
     
 class Timeline(Tickline):
+    '''subclass of :class:`Tickline` specialized for displaying time 
+    information. See module documentation for more details.'''
+    
     labeller_cls = ObjectProperty(TimeLabeller)
+    
     tz = ObjectProperty(get_localzone())
+    
     def get_min_time(self, *args):
         return self.datetime_of(self.min_index)
     def set_min_time(self, val):
@@ -674,7 +680,8 @@ if __name__ == '__main__':
     simple.add_widget(Timeline())
     complex_ = AccordionItem(title='complex')
     complex_.add_widget(
-        Timeline(orientation='horizontal',
+        Timeline(backward=True
                  ))
     acc.add_widget(simple)
+    acc.add_widget(complex_)
     runTouchApp(acc)
