@@ -54,21 +54,21 @@ handle it by themselves in most cases. They by default use the local timezone
 in the computation of times. 
 
 Most of the customizable settings in `Timeline` are the same as
-`~kivy.garden.tickline.Tickline`. These include 
-`~Timeline.orientation`, `~Timeline.backward`, 
-`~Timeline.line_offset`, `~Timeline.line_pos`, and
-`~Timeline.min_scale`, `~Timeline.max_scale`. 
+`kivy.garden.tickline.Tickline`. These include 
+`Timeline.orientation`, `Timeline.backward`, 
+`Timeline.line_offset`, `Timeline.line_pos`, and
+`Timeline.min_scale`, `Timeline.max_scale`. 
 
 In addition, the attributes `Timeline.min_time`, `Timeline.max_time`,
 `Timeline.time_0`, and `Timeline.time_1` are given as the time
-versions of `~Timeline.min_index`, `~Timeline.max_index`,
-`~Timeline.index_0`, and `~Timeline.index_1`.
+versions of `Timeline.min_index`, `Timeline.max_index`,
+`Timeline.index_0`, and `Timeline.index_1`.
 
 The centerpiece of `Timeline`, though, is really `TimeTicks`s.
 There are many available options for the intervals tracked, from 1 second to
 1 day (the default ticks offer a sample of the them), listed in 
 `TimeTick.mode_options`. You can change a `TimeTick`'s interval
-by changing its `~TimeTick.mode`. For example
+by changing its `TimeTick.mode`. For example
 
     # interval of 1 second
     tick = TimeTick(mode='second')
@@ -80,8 +80,8 @@ by changing its `~TimeTick.mode`. For example
     tick = TimeTick(mode='30 minutes')
     
 Most other attributes are inherited from `kivy.garden.tickline.Tick`.
-These include `~TimeTick.tick_size`, `~TimeTick.label_global`,
-`~TimeTick.halign`, `~TimeTick.valign`, etc.
+These include `TimeTick.tick_size`, `TimeTick.label_global`,
+`TimeTick.halign`, `TimeTick.valign`, etc.
 
 You may use `selected_time_ticks` to get a list of `TimeTicks`s 
 with intervals mentioned above. Or you can call `all_time_ticks` to get
