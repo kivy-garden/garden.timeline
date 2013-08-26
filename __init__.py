@@ -220,26 +220,36 @@ class TimeLabeller(TickLabeller):
         if tl.is_vertical():
             y = tick_info[1] + tick_info[3] / 2 - texture.height / 2
             if which == 'time':
-                halign = self.time_halign
+#                 halign = self.time_halign
                 dist = self.time_dist_from_edge
             else:
-                halign = self.date_halign
+#                 halign = self.date_halign
                 dist = self.date_dist_from_edge            
+            halign = tick.halign
             if halign == 'left':
                 x = tl.x + dist
+            elif halign == 'line_left':
+                x = tl.line_pos - dist - texture.width
+            elif halign == 'line_right':
+                x = tl.line_pos + dist
             else:
                 x = tl.right - dist - texture.width
         else:
             # TODO horizontal is gonna get crowded with text
             x = tick_info[0] + tick_info[2] / 2 - texture.width / 2
             if which == 'time':
-                valign = self.time_valign
+#                 valign = self.time_valign
                 dist = self.time_dist_from_edge
             else:
-                valign = self.date_valign
+#                 valign = self.date_valign
                 dist = self.date_dist_from_edge
+            valign = tick.valign
             if valign == 'top':
                 y = tl.top - dist - texture.height
+            elif valign == 'line_top':
+                y = tl.line_pos + dist
+            elif valign == 'line_bottom':
+                y = tl.line_pos - dist - texture.height
             else:
                 y = tl.y + dist       
         return (texture, [x, y])
@@ -272,8 +282,8 @@ class TimeLabeller(TickLabeller):
                         last_rect[0] = last_rect[1]
                         last_rect[1] = rect
                                                    
+                    max_ = tl.top if a else tl.right
                     if len(bottom_up) > 1:
-                        max_ = tl.top if a else tl.right
                         _2ndlast, last = last_rect
                         last_coord = max(_2ndlast.pos[a] + _2ndlast.size[a],
                                      max_ - last.size[a])
@@ -284,8 +294,10 @@ class TimeLabeller(TickLabeller):
                         _2ndlast.pos = (_2ndlast.pos[b], _2ndlast_coord) if a \
                                         else (_2ndlast_coord, _2ndlast.pos[b])
                     else:
-                        new_y = tl.top - last_rect[1].size[a]
-                        last_rect[1].pos = last_rect[1].pos[b], new_y
+                        new_coord = max_ - last_rect[1].size[a]
+                        last_rect[1].pos = (last_rect[1].pos[b], new_coord) \
+                                            if a else \
+                                            (new_coord, last_rect[1].pos[b])
                 else:
                     for index in bottom_up[:-1]:
                         self._update_rect(tick, index, instrs, get_texture_pos,
@@ -679,7 +691,10 @@ if __name__ == '__main__':
     complex_ = AccordionItem(title='complex')
     complex_.add_widget(
         Timeline(backward=True,
-                 orientation='horizontal'
+                 orientation='horizontal',
+                 ticks=selected_time_ticks() + [TimeTick(valign='top',
+                                                         mode='12 hours')],
+                 line_offset=30
                  ))
     acc.add_widget(simple)
     acc.add_widget(complex_)
