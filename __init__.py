@@ -1,6 +1,6 @@
 '''
 Timeline
---------
+========
 
 The :class:`Timeline` is a widget specialized for displaying time
 information on a continuous, and perhaps infinite, scale. 
@@ -11,7 +11,7 @@ much like :class:`kivy.garden.tickline.Tickline`, how
 in the :mod:`kivy.garden.tickline` package. 
 
 Dependencies
-============
+------------
 
 1. kivy garden package :mod:`kivy.garden.tickline`. Use 
     ``garden install tickline`` to install it, just like installing any
@@ -25,7 +25,7 @@ Dependencies
    suffice here. 
 
 Platforms
-=========
+---------
 
 Most of the code here work great regardless of platform. The only exception is
 getting the local time zone.
@@ -38,7 +38,7 @@ this is not a priority, but if you'd like to have this feature, you are welcome
 to submit patches. 
 
 Usage
-=====
+-----
 
 A simple timeline can be obtained by just calling::
 
@@ -110,7 +110,7 @@ A more complex working example is::
         runTouchApp(acc)
 
 Extending
-=========
+---------
 
 The :class:`TimeTick` overrides :meth:`Tick.tick_iter`
 to yield datetimes instead of local indices, and :meth:`Tick.draw` similarly
