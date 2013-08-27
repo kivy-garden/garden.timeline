@@ -704,6 +704,8 @@ class Timeline(Tickline):
         secs = (dt - unixepoch).total_seconds() 
         global_idx = secs / TimeTick.scale_factor_dict['second']
         return global_idx
+    def pos_of_time(self, time):
+        return self.index2pos(self.index_of(time))
     def center_on_timeframe(self, start, end):
         self.index_0 = self.index_of(start)
         self.index_1 = self.index_of(end)
