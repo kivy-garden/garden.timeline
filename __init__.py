@@ -706,6 +706,8 @@ class Timeline(Tickline):
         return global_idx
     def pos_of_time(self, time):
         return self.index2pos(self.index_of(time))
+    def timedelta2dist(self, td):
+        return td.days * self.scale
     def center_on_timeframe(self, start, end):
         self.index_0 = self.index_of(start)
         self.index_1 = self.index_of(end)
